@@ -111,21 +111,4 @@ class Cache:
         if self.next_cache:
             self.next_cache.data_manager.flush()
 
-    @staticmethod
-    def set_openai_key():
-        import_openai()
-        import openai  # pylint: disable=C0415
-
-        openai.api_key = os.getenv("OPENAI_API_KEY")
-
-    @staticmethod
-    def set_azure_openai_key():
-        import_openai()
-        import openai  # pylint: disable=C0415
-
-        openai.api_type = "azure"
-        openai.api_key = os.getenv("OPENAI_API_KEY")
-        openai.api_base = os.getenv("OPENAI_API_BASE")
-        openai.api_version = os.getenv("OPENAI_API_VERSION")
-
 cache = Cache()

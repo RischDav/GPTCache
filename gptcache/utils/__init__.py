@@ -32,7 +32,6 @@ __all__ = [
     "import_ruamel",
     "import_selective_context",
     "import_httpx",
-    "import_openai",
     "import_docarray",
     "softmax",
     "import_paddle",

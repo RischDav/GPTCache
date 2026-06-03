@@ -35,11 +35,11 @@ def find_version(*file_paths):
 
 
 setuptools.setup(
-    name="gptcache",
+    name="cognicache",
     packages=find_packages(),
     version=find_version("gptcache", "__init__.py"),
-    author="SimFG",
-    author_email="bang.fu@zilliz.com",
+    author="David Rischow",
+    author_email="david.rischow@digits.schwarz",
     description="GPTCache, a powerful caching library that can be used to speed up and lower the cost of chat "
                 "applications that rely on the LLM service. GPTCache works as a memcache for AIGC applications, "
                 "similar to how Redis works for traditional applications.",
