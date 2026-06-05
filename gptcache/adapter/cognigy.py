@@ -1,7 +1,6 @@
 import requests
 from gptcache.adapter.adapter import adapt
 from gptcache.adapter.base import BaseCacheLLM
-from gptcache.manager.scalar_data.base import Answer, DataType
 
 class Cognigy(BaseCacheLLM):
 
@@ -24,7 +23,10 @@ class Cognigy(BaseCacheLLM):
         res_json = response.json()
         
         bot_text = res_json.get("text", "")
-        status = res_json.get("data", {}).get("status")
+        
+        # SICHERE EXTRAKTION: "or {}" fängt explizite "data": null Werte sicher ab
+        res_data = res_json.get("data") or {}
+        status = res_data.get("status")
         
         # Prüfen ob terminiert
         if "leeva" in bot_text.lower() or "repeat" in bot_text.lower() or status != "termination":
@@ -41,11 +43,19 @@ class Cognigy(BaseCacheLLM):
     @staticmethod
     def _update_cache_callback(llm_data, update_cache_func, *args, **kwargs):
         """Cacht das Ergebnis nur, wenn es eine erfolgreiche finale Antwort ist."""
+        if not llm_data:
+            return llm_data
+            
         text_to_cache = llm_data.get("text", "")
-        status = llm_data.get("data", {}).get("status")
+        
+        # SICHERE EXTRAKTION: Auch hier gegen "data": null absichern
+        res_data = llm_data.get("data") or {}
+        status = res_data.get("status")
         
         if status == "termination" and text_to_cache:
-            update_cache_func(Answer(text_to_cache, DataType.STR))
+            # Wir übergeben den reinen Text-String. Die Konfigurations-API 
+            # von GPTCache übernimmt die Kapselung für SQLite/FAISS automatisch.
+            update_cache_func(text_to_cache)
             
         return llm_data
 
