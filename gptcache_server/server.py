@@ -65,6 +65,7 @@ async def scon_webhook(payload: SconRequest):
             userId=payload.userId,
             sessionId=payload.sessionId,
             text=payload.text,
+            prompt=payload.text, 
             endpointUrl=payload.endpointUrl,
             data=payload.data if payload.data else {}
         )
