@@ -23,7 +23,7 @@ import uvicorn
 from pydantic import BaseModel
 
 # Importiere deinen angepassten SconBot-Adapter
-from scon_adapter import SconBot
+from gptcache.adapter.cognigy import Cognigy
 
 app = FastAPI()
 openai_cache: Optional[Cache] = None
