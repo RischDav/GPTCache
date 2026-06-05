@@ -7,7 +7,9 @@ class Cognigy(BaseCacheLLM):
 
     @classmethod
     def _llm_handler(cls, *llm_args, **llm_kwargs):
-        url = "placeholder"
+        url = llm_kwargs.get("endpointUrl")
+        if not url:
+            raise ValueError("[GPTCache-Adapter] 'endpointUrl' wurde nicht im Request übergeben!")
         
         payload = {
             "userId": llm_kwargs.get("userId"),

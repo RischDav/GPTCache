@@ -2,7 +2,7 @@ import argparse
 import json
 import os
 import zipfile
-from typing import Optional
+from typing import Optional, Dict, Any  # Dict und Any für das SCON-Format hinzugefügt
 
 from gptcache import cache, Cache
 from gptcache.adapter.api import (
@@ -22,14 +22,17 @@ from fastapi.responses import FileResponse
 import uvicorn
 from pydantic import BaseModel
 
+# Importiere deinen angepassten SconBot-Adapter
+from scon_adapter import SconBot
 
 app = FastAPI()
 openai_cache: Optional[Cache] = None
 cache_dir = ""
-#To download it later
+# To download it later
 cache_file_key = ""
 
 
+# Altes Datenmodell (unangetastet lassen für Abwärtskompatibilität)
 class CacheData(BaseModel):
     prompt: str
     answer: Optional[str] = ""
@@ -37,10 +40,34 @@ class CacheData(BaseModel):
     ip: Optional[str] = None
 
 
+# NEUES Datenmodell für die Schwarz-Gruppe mit dynamischer Endpoint-URL
+class SconRequest(BaseModel):
+    userId: str
+    sessionId: str
+    text: str
+    endpointUrl: str
+    data: Optional[Dict[str, Any]] = {}
+
 
 @app.get("/")
 async def hello():
     return "hello gptcache server"
+
+
+# NEUER ENDPUNKT: Verarbeitet Cognigy-Anfragen über den SconBot-Adapter
+@app.post("/scon-webhook")
+async def scon_webhook(payload: SconRequest):
+    try:
+        response_data = SconBot.create(
+            userId=payload.userId,
+            sessionId=payload.sessionId,
+            text=payload.text,
+            endpointUrl=payload.endpointUrl,
+            data=payload.data if payload.data else {}
+        )
+        return response_data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/put")
@@ -83,6 +110,7 @@ async def get_cache_file(key: str = "") -> FileResponse:
             for file in files:
                 zipf.write(os.path.join(root, file))
     return FileResponse(zip_filename)
+
 
 def main():
     parser = argparse.ArgumentParser()
