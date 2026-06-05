@@ -13,6 +13,9 @@ from gptcache.adapter.api import (
 )
 from gptcache.processor.pre import last_content
 from gptcache.utils import import_fastapi, import_pydantic, import_starlette
+from transformers.tokenization_utils_base import PreTrainedTokenizerBase
+if not hasattr(PreTrainedTokenizerBase, "encode_plus"):
+    PreTrainedTokenizerBase.encode_plus = PreTrainedTokenizerBase.__call__
 
 import_fastapi()
 import_pydantic()
