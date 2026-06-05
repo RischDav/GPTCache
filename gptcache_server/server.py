@@ -58,7 +58,7 @@ async def hello():
 @app.post("/scon-webhook")
 async def scon_webhook(payload: SconRequest):
     try:
-        response_data = SconBot.create(
+        response_data = Cognigy.create(
             userId=payload.userId,
             sessionId=payload.sessionId,
             text=payload.text,
