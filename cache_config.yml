@@ -1,0 +1,29 @@
+# Generische Konfiguration für den SCON GPTCache-Proxy
+embedding:
+  huggingface
+
+embedding_config:
+  model: 'sentence-transformers/all-MiniLM-L6-v2'
+
+storage_config:
+  data_dir:
+    gptcache_data
+  manager:
+    sqlite,faiss
+  vector_params:
+    dimension: 384  # KRITISCH: Dieses Modell nutzt 384 Dimensionen!
+
+evaluation: 
+  distance
+
+evaluation_config:
+
+pre_function:
+  get_prompt
+
+post_function:
+  first
+
+config:
+  similarity_threshold: 0.8
+  enable_token_counter: true
