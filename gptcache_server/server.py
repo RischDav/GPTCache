@@ -1,5 +1,6 @@
 import argparse
 import os
+import time
 import zipfile
 from typing import Optional, Dict, Any
 
@@ -11,7 +12,6 @@ from gptcache.adapter.api import (
 from gptcache.utils import import_fastapi, import_pydantic
 from transformers.tokenization_utils_base import PreTrainedTokenizerBase
 
-# Fix für ältere Transformers-Versionen
 if not hasattr(PreTrainedTokenizerBase, "encode_plus"):
     PreTrainedTokenizerBase.encode_plus = PreTrainedTokenizerBase.__call__
 
@@ -23,16 +23,14 @@ from fastapi.responses import FileResponse
 import uvicorn
 from pydantic import BaseModel
 
-# Importiere deinen angepassten SconBot-Adapter
 from gptcache.adapter.cognigy import Cognigy
 
 app = FastAPI(title="GPTCache SconBot Server")
 cache_dir = ""
 cache_file_key = ""
-USE_CACHE = False  # Globale Variable für den Cache-Bypass
+USE_CACHE = False
 
 
-# Das saubere Datenmodell für die Schwarz-Gruppe
 class SconRequest(BaseModel):
     userId: str
     sessionId: str
@@ -46,15 +44,14 @@ async def hello():
     return "hello gptcache scon-bot server"
 
 
-# Der zentrale Webhook für Cognigy-Anfragen
 @app.post("/scon-webhook")
 async def scon_webhook(payload: SconRequest):
     global USE_CACHE
     try:
-        # Wenn USE_CACHE False ist, soll der Cache übersprungen werden (cache_skip = True)
         cache_skip_flag = not USE_CACHE
         
-        # Übergabe der Daten und des Cache-Bypass-Flags an den Cognigy-Adapter
+        start_time = time.perf_counter()
+        
         response_data = Cognigy.create(
             userId=payload.userId,
             sessionId=payload.sessionId,
@@ -64,12 +61,26 @@ async def scon_webhook(payload: SconRequest):
             data=payload.data if payload.data else {},
             cache_skip=cache_skip_flag
         )
+        
+        end_time = time.perf_counter()
+        duration = end_time - start_time
+        
+        print(f"[TIMING] Anfrage für User '{payload.userId}' dauerte {duration:.4f} Sekunden.")
+        
+        if isinstance(response_data, dict):
+            response_data["processing_time_sec"] = round(duration, 4)
+            
+            is_cache_hit = response_data.pop("gptcache", False)
+            if "outputStack" in response_data and isinstance(response_data["outputStack"], list):
+                for item in response_data["outputStack"]:
+                    if isinstance(item, dict):
+                        item["source"] = "cache" if is_cache_hit else "bot"
+                        
         return response_data
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# Admin-Endpoint zum Download des Caches als ZIP
 @app.get("/cache_file")
 async def get_cache_file(key: str = "") -> FileResponse:
     global cache_dir, cache_file_key
@@ -95,8 +106,6 @@ def main():
     parser.add_argument("-d", "--cache-dir", default="gptcache_data", help="the cache data dir")
     parser.add_argument("-k", "--cache-file-key", default="", help="the cache file key")
     parser.add_argument("-f", "--cache-config-file", default=None, help="the cache config file")
-    
-    # Ja/Nein-Flag für die Cache-Erlaubnis
     parser.add_argument(
         "-usecache",
         "--usecache",
@@ -107,11 +116,9 @@ def main():
     args = parser.parse_args()
     global cache_dir, cache_file_key, USE_CACHE
 
-    # CLI-Wert global sichern
     USE_CACHE = args.usecache
     print(f"Server gestartet. Caching aktiv: {USE_CACHE}")
 
-    # Cache-Infrastruktur initialisieren
     if args.cache_config_file:
         init_conf = init_similar_cache_from_config(config_dir=args.cache_config_file)
         cache_dir = init_conf.get("storage_config", {}).get("data_dir", "")
