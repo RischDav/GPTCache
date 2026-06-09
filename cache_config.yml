@@ -11,7 +11,7 @@ storage_config:
   manager:
     sqlite,faiss
   vector_params:
-    dimension: 384  # KRITISCH: Dieses Modell nutzt 384 Dimensionen!
+    dimension: 1024
 
 evaluation: 
   distance
