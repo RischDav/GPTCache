@@ -22,7 +22,7 @@ pre_function:
   get_any_text
 
 post_function:
-  first
+  parse_cognigy_response
 
 config:
   similarity_threshold: 0.85
