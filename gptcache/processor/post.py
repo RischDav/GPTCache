@@ -5,20 +5,6 @@ import numpy
 
 from gptcache.utils import softmax
 
-def parse_cognigy_response(data: Any, **_: Any) -> str:
-    """Extrahiert den reinen Antwort-Text aus dem Cognigy JSON-Objekt."""
-    if isinstance(data, dict):
-        # 1. Option: Wir holen uns gezielt den Text aus dem ersten Element des outputStack
-        if "outputStack" in data and isinstance(data["outputStack"], list) and len(data["outputStack"]) > 0:
-            return data["outputStack"][0].get("text", "")
-        
-        # Fallback: Falls kein outputStack da ist, nimm das normale text-Feld
-        if "text" in data:
-            return data["text"]
-            
-    # Falls es schon ein flacher String ist (wie vermutlich bei PLU)
-    return str(data)
-
 def random_one(messages: List[Any]) -> Any:
     """Randomly select one result after evaluation.
 

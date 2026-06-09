@@ -38,10 +38,8 @@ class Cognigy(BaseCacheLLM):
             return llm_data
             
         text_to_cache = llm_data.get("text", "")
-        res_data = llm_data.get("data") or {}
-        status = res_data.get("status")
         
-        if status == "termination" and text_to_cache:
+        if text_to_cache:
             update_cache_func(text_to_cache)
             
         return llm_data

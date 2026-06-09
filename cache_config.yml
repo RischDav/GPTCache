@@ -19,10 +19,10 @@ evaluation:
 evaluation_config:
 
 pre_function:
-  get_any_text
+  get_prompt
 
 post_function:
-  parse_cognigy_response
+  first
 
 config:
   similarity_threshold: 0.85

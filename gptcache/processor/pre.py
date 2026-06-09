@@ -2,19 +2,6 @@ import re
 import string
 from typing import Dict, Any
 
-def get_liva_content(data: Dict[str, Any], **_: Dict[str, Any]) -> Any:
-    """Extrahiert den Text dynamisch, egal ob Prompt oder Chat-Message."""
-    # 1. Fall: Es ist eine PLU-/Produktabfrage mit "prompt"-Key
-    if "prompt" in data and data["prompt"]:
-        return data["prompt"]
-    
-    # 2. Fall: Es ist eine Freitext-Anfrage mit "messages"-Liste
-    if "messages" in data and isinstance(data["messages"], list) and len(data["messages"]) > 0:
-        return data["messages"][-1].get("content", "")
-        
-    # Fallback, falls gar nichts passt
-    return ""
-
 def last_content(data: Dict[str, Any], **_: Dict[str, Any]) -> Any:
     """get the last content of the message list
 
