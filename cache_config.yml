@@ -3,7 +3,7 @@ embedding:
   huggingface
 
 embedding_config:
-  model: 'sentence-transformers/all-MiniLM-L6-v2'
+  model: 'codefuse-ai/F2LLM-v2-0.6B'
 
 storage_config:
   data_dir:
