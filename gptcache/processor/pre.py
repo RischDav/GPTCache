@@ -363,6 +363,12 @@ def get_openai_moderation_input(data: Dict[str, Any], **_: Dict[str, Any]) -> st
     return str(data.get("input"))
 
 
+def get_any_text(data: Dict[str, Any], **_: Dict[str, Any]) -> Any:
+    """Sucht flexibel nach 'text' oder 'prompt' im Request-Body."""
+    if "text" in data and data["text"]:
+        return data["text"]
+    return data.get("prompt")
+
 def concat_all_queries(data: Dict[str, Any], **params: Dict[str, Any]) -> Any:
     """
 

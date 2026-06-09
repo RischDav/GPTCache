@@ -19,7 +19,7 @@ evaluation:
 evaluation_config:
 
 pre_function:
-  get_liva_content
+  get_any_text
 
 post_function:
   first
