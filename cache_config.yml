@@ -25,5 +25,5 @@ post_function:
   first
 
 config:
-  similarity_threshold: 0.8
+  similarity_threshold: 0.95
   enable_token_counter: true
