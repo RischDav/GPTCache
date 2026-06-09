@@ -11,7 +11,7 @@ storage_config:
   manager:
     sqlite,faiss
   vector_params:
-    dimension: 658
+    dimension: 640
 
 evaluation: 
   distance
@@ -19,11 +19,11 @@ evaluation:
 evaluation_config:
 
 pre_function:
-  get_prompt
+  get_liva_content
 
 post_function:
   first
 
 config:
-  similarity_threshold: 0.95
+  similarity_threshold: 0.85
   enable_token_counter: false
