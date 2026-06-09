@@ -3,7 +3,7 @@ embedding:
   huggingface
 
 embedding_config:
-  model: 'codefuse-ai/F2LLM-v2-0.6B'
+  model: 'microsoft/harrier-oss-v1-270m'
 
 storage_config:
   data_dir:
@@ -11,7 +11,7 @@ storage_config:
   manager:
     sqlite,faiss
   vector_params:
-    dimension: 1024
+    dimension: 658
 
 evaluation: 
   distance
@@ -26,4 +26,4 @@ post_function:
 
 config:
   similarity_threshold: 0.95
-  enable_token_counter: true
+  enable_token_counter: false
