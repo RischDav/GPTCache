@@ -25,7 +25,7 @@ class Cognigy(BaseCacheLLM):
         res_data = res_json.get("data") or {}
         status = res_data.get("status")
         
-        if "leeva" in bot_text.lower() or "repeat" in bot_text.lower() or status != "termination":
+        if "leeva" in bot_text.lower() or "repeat" in bot_text.lower():
             response = requests.post(url, json=payload)
             response.raise_for_status()
             res_json = response.json()
