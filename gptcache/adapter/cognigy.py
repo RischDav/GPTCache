@@ -34,6 +34,9 @@ class Cognigy(BaseCacheLLM):
 
     @staticmethod
     def _update_cache_callback(llm_data, update_cache_func, *args, **kwargs):
+        # --- SICHERHEIT: Lokaler Import direkt in der Methode ---
+        import json 
+        
         if not llm_data:
             return llm_data
             
@@ -42,13 +45,12 @@ class Cognigy(BaseCacheLLM):
         end_time = res_data.get("endTime", None)
         
         if text_to_cache:
-
             cache_payload = {
                 "text": text_to_cache,
                 "endTime": end_time
             }
             update_cache_func(json.dumps(cache_payload))
-
+            
         return llm_data
 
     @classmethod
@@ -57,13 +59,14 @@ class Cognigy(BaseCacheLLM):
             kwargs["messages"] = [{"content": kwargs.get("text")}]
 
         def cache_data_convert(cache_data):
-            # --- ERWEITERUNG: JSON-Paket aus der Datenbank wieder entpacken ---
+            # --- SICHERHEIT: Lokaler Import direkt im Konverter ---
+            import json 
+            
             try:
                 parsed_data = json.loads(cache_data)
                 plain_text = parsed_data.get("text", "")
                 end_time = parsed_data.get("endTime", None)
             except Exception:
-                # Fallback, falls noch alte Plaintext-Einträge in der DB existieren
                 plain_text = cache_data
                 end_time = None
 
@@ -71,7 +74,7 @@ class Cognigy(BaseCacheLLM):
                 "text": plain_text,
                 "data": {
                     "status": "termination",
-                    "endTime": end_time  # Gibt den echten gespeicherten Timestamp zurück
+                    "endTime": end_time
                 },
                 "outputStack": [{"text": plain_text, "data": {}, "source": "cache"}],
                 "userId": kwargs.get("userId"),
